@@ -65,7 +65,10 @@
             var equal = true;
 
             for (var key in a) {
-                if ((!isOwn && key in b) || (isOwn && typeof b != 'undefined' && b.hasOwnProperty(key))) {
+                if (isOwn && !a.hasOwnProperty(key)) {//to skip not own properties
+                    continue;
+                }
+                if ((!isOwn && key in b) || (isOwn && b.hasOwnProperty(key))) {
                     if (a[key] === b[key]) {
                         diffValue[key] = equalObj(a[key]);
                     } else {
@@ -96,7 +99,10 @@
             }
 
             for (key in b) {
-                if ((!isOwn && !(key in a)) || (isOwn && typeof a != 'undefined' && !a.hasOwnProperty(key))) {
+                if (isOwn && !b.hasOwnProperty(key)) {//to skip not own properties
+                    continue;
+                }
+                if ((!isOwn && !(key in a)) || (isOwn && !a.hasOwnProperty(key))) {
                     equal = false;
                     diffValue[key] = {
                         changed: 'added',
@@ -123,8 +129,8 @@
          * @return {Object}
          * @param deep
          */
-        function diffOwnProperties(a, b, shallow) {
-            return diff(a, b, shallow, true);
+        function diffOwnProperties(a, b, deep) {
+            return diff(a, b, deep, true);
         }
 
         /**
@@ -138,7 +144,7 @@
 
             var diff = changes.value;
             if (changes.changed == 'equal') {
-                return $sce.trustAsHtml(inspect(diff, shallow));
+                return inspect(diff, shallow);
             }
 
             for (var key in diff) {
